@@ -102,13 +102,13 @@ class Enrollment(models.Model):
     # Has question content
     # Other fields and methods you would like to design
 class Question(models.Model):
-    # Foreign key to lesson
-    # question text
-    # question grade/mark
-    course = models.ManyToManyField(Course)
-    question_text = models.TextField
-    grade = models.IntegerField
-    lesson_id = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    grade = models.IntegerField(default=0)
+    content = models.TextField()
+    
+    def __str__(self):
+        return self.content
+
     # <HINT> A sample model method to calculate if learner get the score of the question
     def is_get_score(self, selected_ids):
        all_answers = self.choice_set.filter(is_correct=True).count()
@@ -126,15 +126,22 @@ class Question(models.Model):
     # Indicate if this choice of the question is a correct one or not
     # Other fields and methods you would like to design
 class Choice(models.Model):
-    question_id=models.ManyToManyField(Question)
-    choice_text=models.TextField
-    is_correct=models.BooleanField
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    content = models.TextField()
+    is_correct = models.BooleanField(default=False)
+    def __str__(self):
+        return self.content
+
     
 # <HINT> The submission model
 # One enrollment could have multiple submission
 # One submission could have multiple choices
 # One choice could belong to multiple submissions
 class Submission(models.Model):
-   enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
-   chocies = models.ManyToManyField(Choice)
+    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE, default=1)
+    choices = models.ManyToManyField(Choice)
+    date_submitted = models.DateField(default=now)
+    
+
+
 #    Other fields and methods you would like to design
